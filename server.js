@@ -2,8 +2,9 @@ const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 
 const app = express();
-app.use(express.json());
 
+// RAW body parser (important for MT5)
+app.use(express.text({ type: "*/*" }));
 const PORT = 3000;
 
 // Temporary users storage
@@ -12,12 +13,13 @@ const users = {};
 // ==========================
 // Generate API KEY
 // ==========================
+
 app.get("/generate-key", (req, res) => {
 
     const email = req.query.email;
 
     if(!email){
-        return res.send("Provide email ?risktoryjournal@gmail.com");
+        return res.send("Provide email ?email=test@gmail.com");
     }
 
     // If user already exists → return same key
@@ -41,17 +43,22 @@ app.get("/generate-key", (req, res) => {
 // ==========================
 app.post("/sync", (req, res) => {
 
-    const apiKey = req.body.api_key;
+    try {
 
-    if (!users[apiKey]) {
-        return res.status(401).json({error:"Invalid API Key"});
+        const raw = req.body;
+
+        console.log("RAW DATA:", raw);
+
+        const data = JSON.parse(raw);
+
+        console.log("PARSED DATA:", data);
+
+        res.json({ status: "success" });
+
+    } catch (err) {
+
+        console.log("JSON ERROR:", err.message);
+        res.status(400).send("Invalid JSON");
+
     }
-
-    console.log("DATA RECEIVED:", req.body);
-
-    res.json({status:"success"});
 });
-
-app.listen(PORT, () =>
-    console.log(`Antigravity API running on ${PORT}`)
-);
