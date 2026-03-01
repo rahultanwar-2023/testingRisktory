@@ -49,9 +49,16 @@ app.post("/sync", (req, res) => {
 
     try {
 
-        const raw = req.body;
+        let raw = req.body;
 
-        console.log("RAW DATA:", raw);
+        // ✅ REMOVE MT5 NULL BYTES
+        raw = raw.replace(/\0/g, "");
+
+        // ✅ CUT ANYTHING AFTER LAST }
+        const lastBrace = raw.lastIndexOf("}");
+        raw = raw.substring(0, lastBrace + 1);
+
+        console.log("CLEAN DATA:", raw);
 
         const data = JSON.parse(raw);
 
