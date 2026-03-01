@@ -5,7 +5,11 @@ const app = express();
 
 // RAW body parser (important for MT5)
 app.use(express.text({ type: "*/*" }));
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Antigravity API running on ${PORT}`);
+});
 
 // Temporary users storage
 const users = {};
